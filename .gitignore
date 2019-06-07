@@ -1,3 +1,5 @@
 .DS_Store
+.cache
+dist
 elm-stuff
 node_modules

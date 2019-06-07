@@ -8,5 +8,11 @@
 
 ## Dependencies
 
-- [Parcel](https://parceljs.org/)
-- [Elm](https://elm-lang.org/)
+- 📦 [Parcel](https://parceljs.org/)
+- 🌳 [Elm](https://elm-lang.org/)
+
+## Setup
+
+- 💩 `npm install`
+- 📦 `parcel index.html`
+- 🚀 `http://localhost:1234`
