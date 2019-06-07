@@ -60,6 +60,16 @@ initialModel =
           , width = 300
           , height = 200
           }
+        , { x = 0
+          , y = 0
+          , width = 500
+          , height = 100
+          }
+        , { x = 0
+          , y = 0
+          , width = 200
+          , height = 600
+          }
         ]
     , slides = Data.slides
     , transition = Nothing
@@ -113,13 +123,13 @@ update msg model =
 
                             newCurrentFrame =
                                 { x =
-                                    model.currentFrame.x + (target.x - model.currentFrame.x) * round newProgress
+                                    round <|(toFloat model.currentFrame.x) + (toFloat target.x - toFloat model.currentFrame.x) * newProgress
                                 , y =
-                                    model.currentFrame.y + (target.y - model.currentFrame.y) * round newProgress
+                                    round <| (toFloat model.currentFrame.y) + (toFloat target.y - toFloat model.currentFrame.y) * newProgress
                                 , width =
-                                    model.currentFrame.width + (target.width - model.currentFrame.width) * round newProgress
+                                    round <| (toFloat model.currentFrame.width) + (toFloat target.width - toFloat model.currentFrame.width) * newProgress
                                 , height =
-                                    model.currentFrame.height + (target.height - model.currentFrame.height) * round newProgress
+                                    round <| (toFloat model.currentFrame.height) + (toFloat target.height - toFloat model.currentFrame.height) * newProgress
                                 }
                         in
                         ( { model
