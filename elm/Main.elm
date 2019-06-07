@@ -25,7 +25,8 @@ type Change
 
 
 type alias Frame =
-    { x : Int
+    { content : String
+    , x : Int
     , y : Int
     , width : Int
     , height : Int
@@ -49,35 +50,41 @@ initialModel : Model
 initialModel =
     { current = List.head Data.slides
     , currentFrame =
-        { x = 0
+        { content = "1"
+        , x = 0
         , y = 0
-        , width = 150
-        , height = 100
+        , width = 800
+        , height = 400
         }
     , frames =
-        [ { x = 0
-          , y = 0
-          , width = 500
-          , height = 400
-          }
-        , { x = 0
-          , y = 0
-          , width = 200
-          , height = 300
-          }
-        , { x = 0
+        [ { content = "2"
+          , x = 0
           , y = 0
           , width = 600
-          , height = 800
+          , height = 400
           }
-        , { x = 0
+        , { content = "3"
+          , x = 0
           , y = 0
-          , width = 100
-          , height = 100
+          , width = 400
+          , height = 400
           }
-        , { x = 0
+        , { content = "4"
+          , x = 0
           , y = 0
-          , width = 800
+          , width = 200
+          , height = 400
+          }
+        , { content = "5"
+          , x = 0
+          , y = 0
+          , width = 0
+          , height = 400
+          }
+        , { content = "6"
+          , x = 0
+          , y = 0
+          , width = 200
           , height = 400
           }
         ]
@@ -132,7 +139,8 @@ update msg model =
                                     |> min 1
 
                             newCurrentFrame =
-                                { x =
+                                { content = target.content
+                                , x =
                                     round <|(toFloat model.currentFrame.x) + (toFloat target.x - toFloat model.currentFrame.x) * newProgress
                                 , y =
                                     round <| (toFloat model.currentFrame.y) + (toFloat target.y - toFloat model.currentFrame.y) * newProgress
@@ -286,13 +294,20 @@ viewSvg model =
                 ++ " "
                 ++ String.fromInt model.currentFrame.height
         ]
-        [ Svg.circle
-            [ Svg.Attributes.cx "100"
-            , Svg.Attributes.cy "50"
-            , Svg.Attributes.r "30"
-            , Svg.Attributes.fill "blue"
+        [ Svg.g []
+            [ Svg.circle
+                [ Svg.Attributes.cx "100"
+                , Svg.Attributes.cy "50"
+                , Svg.Attributes.r "30"
+                , Svg.Attributes.fill "blue"
+                ]
+                []
+            , Svg.text_
+                [ Svg.Attributes.x <| String.fromInt model.currentFrame.x
+                , Svg.Attributes.y <| String.fromInt (model.currentFrame.y + 100)
+                ]
+                [ Svg.text model.currentFrame.content ]
             ]
-            []
         ]
 
 
