@@ -14,5 +14,5 @@
 ## Setup
 
 - 💩 `npm install`
-- 📦 `parcel index.html`
+- 📦 `npm run dev`
 - 🚀 `http://localhost:1234`
