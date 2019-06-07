@@ -35,8 +35,14 @@ type alias Frame =
 type alias Model =
     { current : Maybe Slide
     , currentFrame : Frame
+    , frames : List Frame
     , slides : List Slide
+    , transition : Maybe Transition
     }
+
+
+type alias Transition =
+    ( Float, Frame )
 
 
 initialModel : Model
@@ -48,7 +54,15 @@ initialModel =
         , width = 150
         , height = 100
         }
+    , frames =
+        [ { x = 0
+          , y = 0
+          , width = 300
+          , height = 200
+          }
+        ]
     , slides = Data.slides
+    , transition = Nothing
     }
 
 
@@ -78,33 +92,57 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         BrowserRenderedFrame frame ->
-            ( model
-            , Cmd.none
-            )
+            case model.transition of
+                Nothing ->
+                    ( model
+                    , Cmd.none
+                    )
+
+                Just ( progress, target ) ->
+                    if progress == 1 then
+                        ( { model | transition = Nothing }
+                        , Cmd.none
+                        )
+
+                    else
+                        let
+                            newProgress =
+                                progress
+                                    + (frame / 2000)
+                                    |> min 1
+
+                            newCurrentFrame =
+                                { x =
+                                    model.currentFrame.x + (target.x - model.currentFrame.x) * round newProgress
+                                , y =
+                                    model.currentFrame.y + (target.y - model.currentFrame.y) * round newProgress
+                                , width =
+                                    model.currentFrame.width + (target.width - model.currentFrame.width) * round newProgress
+                                , height =
+                                    model.currentFrame.height + (target.height - model.currentFrame.height) * round newProgress
+                                }
+                        in
+                        ( { model
+                            | currentFrame = newCurrentFrame
+                            , transition = Just ( newProgress, target )
+                          }
+                        , Cmd.none
+                        )
 
         UserClickedSlide slide ->
-            ( { model | current = Just slide }
+            ( { model
+                | current = Just slide
+                , transition =
+                    model.frames
+                        |> List.head
+                        |> Maybe.map (\first -> ( 0, first ))
+                , frames =
+                    List.drop 1 model.frames
+              }
             , Cmd.none
             )
 
         UserPressedKeyDown key ->
-            let
-                next =
-                    case model.current of
-                        Just c ->
-                            c.id + 1
-
-                        Nothing ->
-                            1
-
-                prev =
-                    case model.current of
-                        Just c ->
-                            c.id - 1
-
-                        Nothing ->
-                            1
-            in
             case key of
                 "ArrowLeft" ->
                     ( changeCurrentSlide Prev model
@@ -213,24 +251,31 @@ viewSlide model slide =
             [ text <| String.fromInt slide.id ]
         ]
 
+
 viewSvg : Model -> Svg.Svg msg
 viewSvg model =
     Svg.svg
         [ Svg.Attributes.width "100vw"
         , Svg.Attributes.height "100vh"
         , Svg.Attributes.viewBox <|
-            (String.fromInt model.currentFrame.x) ++ " " ++
-            (String.fromInt model.currentFrame.y) ++ " " ++
-            (String.fromInt model.currentFrame.width) ++ " " ++
-            (String.fromInt model.currentFrame.height)
+            String.fromInt model.currentFrame.x
+                ++ " "
+                ++ String.fromInt model.currentFrame.y
+                ++ " "
+                ++ String.fromInt model.currentFrame.width
+                ++ " "
+                ++ String.fromInt model.currentFrame.height
         ]
         [ Svg.circle
             [ Svg.Attributes.cx "100"
             , Svg.Attributes.cy "50"
             , Svg.Attributes.r "30"
             , Svg.Attributes.fill "blue"
-            ] []
+            ]
+            []
         ]
+
+
 
 -- MAIN
 
