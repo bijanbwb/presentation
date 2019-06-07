@@ -11,6 +11,8 @@ import Html.Events
 import Json.Decode
 import Markdown
 import Slide exposing (Slide)
+import Svg exposing (Svg)
+import Svg.Attributes
 
 
 
@@ -22,8 +24,17 @@ type Change
     | Prev
 
 
+type alias Frame =
+    { x : Int
+    , y : Int
+    , width : Int
+    , height : Int
+    }
+
+
 type alias Model =
     { current : Maybe Slide
+    , currentFrame : Frame
     , slides : List Slide
     }
 
@@ -31,6 +42,12 @@ type alias Model =
 initialModel : Model
 initialModel =
     { current = List.head Data.slides
+    , currentFrame =
+        { x = 0
+        , y = 0
+        , width = 150
+        , height = 100
+        }
     , slides = Data.slides
     }
 
@@ -155,6 +172,7 @@ view model =
     div []
         [ header
         , viewSlides model model.slides
+        , viewSvg model
         ]
 
 
@@ -195,7 +213,24 @@ viewSlide model slide =
             [ text <| String.fromInt slide.id ]
         ]
 
-
+viewSvg : Model -> Svg.Svg msg
+viewSvg model =
+    Svg.svg
+        [ Svg.Attributes.width "100vw"
+        , Svg.Attributes.height "100vh"
+        , Svg.Attributes.viewBox <|
+            (String.fromInt model.currentFrame.x) ++ " " ++
+            (String.fromInt model.currentFrame.y) ++ " " ++
+            (String.fromInt model.currentFrame.width) ++ " " ++
+            (String.fromInt model.currentFrame.height)
+        ]
+        [ Svg.circle
+            [ Svg.Attributes.cx "100"
+            , Svg.Attributes.cy "50"
+            , Svg.Attributes.r "30"
+            , Svg.Attributes.fill "blue"
+            ] []
+        ]
 
 -- MAIN
 
