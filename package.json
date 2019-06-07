@@ -2,7 +2,7 @@
   "name": "presentation",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "./js/index.js",
   "scripts": {
     "build": "parcel build index.html",
     "dev": "parcel index.html",
