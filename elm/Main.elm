@@ -25,8 +25,7 @@ type Change
 
 
 type alias Frame =
-    { content : String
-    , x : Int
+    { x : Int
     , y : Int
     , width : Int
     , height : Int
@@ -50,42 +49,41 @@ initialModel : Model
 initialModel =
     { current = List.head Data.slides
     , currentFrame =
-        { content = "1"
-        , x = 0
+        { x = 0
         , y = 0
-        , width = 800
-        , height = 400
+        , width = 1000
+        , height = 1000
         }
     , frames =
-        [ { content = "2"
-          , x = 0
+        [ { x = 0
           , y = 0
-          , width = 600
-          , height = 400
+          , width = 100
+          , height = 140
           }
-        , { content = "3"
-          , x = 0
+        , { x = 0
           , y = 0
-          , width = 400
-          , height = 400
+          , width = 800
+          , height = 300
           }
-        , { content = "4"
-          , x = 0
+        , { x = 0
           , y = 0
           , width = 200
           , height = 400
           }
-        , { content = "5"
-          , x = 0
+        , { x = 0
           , y = 0
-          , width = 0
-          , height = 400
+          , width = 800
+          , height = 800
           }
-        , { content = "6"
-          , x = 0
-          , y = 0
+        , { x = 700
+          , y = 700
           , width = 200
           , height = 400
+          }
+        , { x = 0
+          , y = 0
+          , width = 1200
+          , height = 1000
           }
         ]
     , slides = Data.slides
@@ -139,8 +137,7 @@ update msg model =
                                     |> min 1
 
                             newCurrentFrame =
-                                { content = target.content
-                                , x =
+                                { x =
                                     round <|(toFloat model.currentFrame.x) + (toFloat target.x - toFloat model.currentFrame.x) * newProgress
                                 , y =
                                     round <| (toFloat model.currentFrame.y) + (toFloat target.y - toFloat model.currentFrame.y) * newProgress
@@ -209,6 +206,12 @@ changeCurrentSlide change model =
             model.slides
                 |> List.filter (\s -> s.id == changeSlideId)
                 |> List.head
+        , transition =
+            model.frames
+                |> List.head
+                |> Maybe.map (\first -> ( 0, first ))
+        , frames =
+            List.drop 1 model.frames
     }
 
 
@@ -236,10 +239,10 @@ keyDecoder =
 view : Model -> Html Msg
 view model =
     div []
-        [ header
-        , viewSlides model model.slides
-        , viewSvg model
-        ]
+        -- [ header
+        -- , viewSlides model model.slides
+        -- ]
+        [ viewSvg model ]
 
 
 header : Html msg
@@ -296,21 +299,57 @@ viewSvg model =
         ]
         [ Svg.g []
             [ Svg.circle
-                [ Svg.Attributes.cx "100"
-                , Svg.Attributes.cy "50"
-                , Svg.Attributes.r "30"
+                [ Svg.Attributes.cx "50"
+                , Svg.Attributes.cy "80"
+                , Svg.Attributes.r "50"
                 , Svg.Attributes.fill "blue"
                 ]
                 []
-            , Svg.text_
-                [ Svg.Attributes.x <| String.fromInt model.currentFrame.x
-                , Svg.Attributes.y <| String.fromInt (model.currentFrame.y + 100)
-                ]
-                [ Svg.text model.currentFrame.content ]
+            , viewSvgText "20" "60" "white" "Curriculum"
+            ]
+        , Svg.g []
+            [ viewSvgSlide "400" "100" "red"
+            , viewSvgText "420" "120" "white" "Authoring"
+            ]
+        , Svg.g []
+            [ viewSvgSlide "400" "400" "blue"
+            , viewSvgText "420" "420" "white" "Design"
+            ]
+        , Svg.g []
+            [ viewSvgSlide "800" "200" "purple"
+            , viewSvgText "820" "220" "white" "Development"
+            ]
+        , Svg.g []
+            [ viewSvgSlide "800" "800" "orange"
+            , viewSvgText "820" "820" "white" "Marketing"
+            ]
+        , Svg.g []
+            [ viewSvgSlide "100" "200" "green"
+            , viewSvgText "120" "220" "white" "Delivery"
             ]
         ]
 
 
+viewSvgSlide : String -> String -> String -> Svg msg
+viewSvgSlide x y color =
+    Svg.rect
+            [ Svg.Attributes.x x
+            , Svg.Attributes.y y
+            , Svg.Attributes.rx "20"
+            , Svg.Attributes.width "100"
+            , Svg.Attributes.height "100"
+            , Svg.Attributes.fill color
+            ] []
+
+viewSvgText : String -> String -> String -> String -> Svg msg
+viewSvgText x y color content =
+    Svg.text_
+        [ Svg.Attributes.x x
+        , Svg.Attributes.y y
+        , Svg.Attributes.fill color
+        , Svg.Attributes.class "text-xs"
+        ]
+        [ Svg.text content ]
 
 -- MAIN
 
