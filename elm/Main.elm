@@ -15,13 +15,15 @@ import Slide exposing (Slide)
 
 
 type alias Model =
-    { slides : List Slide
+    { current : Maybe Slide
+    , slides : List Slide
     }
 
 
 initialModel : Model
 initialModel =
-    { slides = Data.slides
+    { current = List.head Data.slides
+    , slides = Data.slides
     }
 
 
@@ -71,7 +73,7 @@ view : Model -> Html msg
 view model =
     div []
         [ header
-        , viewSlides model.slides
+        , viewSlides model model.slides
         ]
 
 
@@ -81,15 +83,27 @@ header =
         [ text "Presentation" ]
 
 
-viewSlides : List Slide -> Html msg
-viewSlides slides =
+viewSlides : Model -> List Slide -> Html msg
+viewSlides model slides =
     div []
-        (List.map viewSlide slides)
+        (List.map (viewSlide model) slides)
 
 
-viewSlide : Slide -> Html msg
-viewSlide slide =
-    div [ Html.Attributes.class "bg-blue-100 border-solid border-4 border-gray-600 h-48 w-48" ]
+viewSlide : Model -> Slide -> Html msg
+viewSlide model slide =
+    let
+        borderColor =
+            case model.current of
+                Just c ->
+                    if c == slide then
+                        "border-red-600"
+                    else
+                        "border-gray-600"
+
+                Nothing ->
+                    "border-gray-600"
+    in
+    div [ Html.Attributes.class <| "bg-blue-100 border-solid border-4 h-48 w-48 " ++ borderColor ]
         [ h2 [ Html.Attributes.class "text-4xl" ]
             [ text slide.title ]
         , span [ Html.Attributes.class "text-xs" ]
