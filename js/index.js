@@ -1,6 +1,6 @@
 console.log("👋 Ohai.");
 
-import { Elm } from "../src/Main.elm"
+import { Elm } from "../elm/Main.elm"
 
 Elm.Main.init({
   node: document.querySelector("main")
