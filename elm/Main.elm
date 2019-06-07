@@ -81,6 +81,7 @@ header =
         [ text "Presentation" ]
 
 
+viewSlides : List Slide -> Html msg
 viewSlides slides =
     div []
         (List.map viewSlide slides)
@@ -88,8 +89,12 @@ viewSlides slides =
 
 viewSlide : Slide -> Html msg
 viewSlide slide =
-    div []
-        []
+    div [ Html.Attributes.class "bg-blue-100 border-solid border-4 border-gray-600 h-48 w-48" ]
+        [ h2 [ Html.Attributes.class "text-4xl" ]
+            [ text slide.title ]
+        , span [ Html.Attributes.class "text-xs" ]
+            [ text <| String.fromInt slide.id ]
+        ]
 
 
 
