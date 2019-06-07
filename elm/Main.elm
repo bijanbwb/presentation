@@ -6,6 +6,7 @@ import Browser
 import Data
 import Html exposing (..)
 import Html.Attributes
+import Html.Events
 import Markdown
 import Slide exposing (Slide)
 
@@ -45,6 +46,7 @@ init _ =
 
 type Msg
     = ClickedButton
+    | ClickedSlide Slide
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -52,6 +54,11 @@ update msg model =
     case msg of
         ClickedButton ->
             ( model
+            , Cmd.none
+            )
+        
+        ClickedSlide slide ->
+            ( { model | current = Just slide }
             , Cmd.none
             )
 
@@ -69,7 +76,7 @@ subscriptions _ =
 -- VIEW
 
 
-view : Model -> Html msg
+view : Model -> Html Msg
 view model =
     div []
         [ header
@@ -83,13 +90,13 @@ header =
         [ text "Presentation" ]
 
 
-viewSlides : Model -> List Slide -> Html msg
+viewSlides : Model -> List Slide -> Html Msg
 viewSlides model slides =
     div []
         (List.map (viewSlide model) slides)
 
 
-viewSlide : Model -> Slide -> Html msg
+viewSlide : Model -> Slide -> Html Msg
 viewSlide model slide =
     let
         borderColor =
@@ -103,7 +110,9 @@ viewSlide model slide =
                 Nothing ->
                     "border-gray-600"
     in
-    div [ Html.Attributes.class <| "bg-blue-100 border-solid border-4 h-48 w-48 " ++ borderColor ]
+    div [ Html.Attributes.class <| "bg-blue-100 border-solid border-4 h-48 w-48 " ++ borderColor
+        , Html.Events.onClick <| ClickedSlide slide
+        ]
         [ h2 [ Html.Attributes.class "text-4xl" ]
             [ text slide.title ]
         , span [ Html.Attributes.class "text-xs" ]
