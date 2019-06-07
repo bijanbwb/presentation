@@ -1,1 +1,7 @@
-console.log("Hello, World!");
+console.log("👋 Ohai.");
+
+import { Elm } from "./src/Main.elm"
+
+Elm.Main.init({
+  node: document.querySelector("main")
+});
