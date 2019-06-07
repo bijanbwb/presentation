@@ -2,18 +2,76 @@ module Main exposing (main)
 
 -- IMPORTS
 
+import Browser
+import Data
 import Html exposing (..)
 import Html.Attributes
 import Markdown
+import Slide exposing (Slide)
+
+
+
+-- MODEL
+
+
+type alias Model =
+    { slides : List Slide
+    }
+
+
+initialModel : Model
+initialModel =
+    { slides = Data.slides
+    }
+
+
+initialCommand : Cmd Msg
+initialCommand =
+    Cmd.none
+
+
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( initialModel
+    , initialCommand
+    )
+
+
+
+-- UPDATE
+
+
+type Msg
+    = ClickedButton
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        ClickedButton ->
+            ( model
+            , Cmd.none
+            )
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none
+
 
 
 -- VIEW
 
 
-main =
+view : Model -> Html msg
+view model =
     div []
         [ header
-        , content
+        , viewSlides model.slides
         ]
 
 
@@ -23,14 +81,25 @@ header =
         [ text "Presentation" ]
 
 
-content : Html msg
-content =
-    Markdown.toHtml [ Html.Attributes.class "" ]
-        """
-## Course Creation Process
+viewSlides slides =
+    div []
+        (List.map viewSlide slides)
 
-- Curriculum: Choose courses.
-- Authors: Write courses.
-- Engineering: Munge courses.
-- DevOps: Ship courses.
-        """
+
+viewSlide : Slide -> Html msg
+viewSlide slide =
+    div []
+        []
+
+
+
+-- MAIN
+
+
+main =
+    Browser.element
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
