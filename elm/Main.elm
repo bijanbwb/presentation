@@ -17,6 +17,11 @@ import Slide exposing (Slide)
 -- MODEL
 
 
+type Change
+    = Next
+    | Prev
+
+
 type alias Model =
     { current : Maybe Slide
     , slides : List Slide
@@ -73,7 +78,7 @@ update msg model =
                             c.id + 1
 
                         Nothing ->
-                            0
+                            1
 
                 prev =
                     case model.current of
@@ -81,26 +86,16 @@ update msg model =
                             c.id - 1
 
                         Nothing ->
-                            0
+                            1
             in
             case key of
                 "ArrowLeft" ->
-                    ( { model
-                        | current =
-                            model.slides
-                                |> List.filter (\s -> s.id == prev)
-                                |> List.head
-                      }
+                    ( changeCurrentSlide Prev model
                     , Cmd.none
                     )
 
                 "ArrowRight" ->
-                    ( { model
-                        | current =
-                            model.slides
-                                |> List.filter (\s -> s.id == next)
-                                |> List.head
-                      }
+                    ( changeCurrentSlide Next model
                     , Cmd.none
                     )
 
@@ -108,6 +103,30 @@ update msg model =
                     ( model
                     , Cmd.none
                     )
+
+
+changeCurrentSlide : Change -> Model -> Model
+changeCurrentSlide change model =
+    let
+        changeSlideId =
+            case model.current of
+                Just slide ->
+                    case change of
+                        Next ->
+                            slide.id + 1
+
+                        Prev ->
+                            slide.id - 1
+
+                Nothing ->
+                    1
+    in
+    { model
+        | current =
+            model.slides
+                |> List.filter (\s -> s.id == changeSlideId)
+                |> List.head
+    }
 
 
 
