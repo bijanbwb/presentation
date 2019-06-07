@@ -3,10 +3,12 @@ module Main exposing (main)
 -- IMPORTS
 
 import Browser
+import Browser.Events
 import Data
 import Html exposing (..)
 import Html.Attributes
 import Html.Events
+import Json.Decode
 import Markdown
 import Slide exposing (Slide)
 
@@ -45,22 +47,67 @@ init _ =
 
 
 type Msg
-    = ClickedButton
-    | ClickedSlide Slide
+    = BrowserRenderedFrame Float
+    | UserClickedSlide Slide
+    | UserPressedKeyDown String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ClickedButton ->
+        BrowserRenderedFrame frame ->
             ( model
             , Cmd.none
             )
-        
-        ClickedSlide slide ->
+
+        UserClickedSlide slide ->
             ( { model | current = Just slide }
             , Cmd.none
             )
+
+        UserPressedKeyDown key ->
+            let
+                next =
+                    case model.current of
+                        Just c ->
+                            c.id + 1
+
+                        Nothing ->
+                            0
+
+                prev =
+                    case model.current of
+                        Just c ->
+                            c.id - 1
+
+                        Nothing ->
+                            0
+            in
+            case key of
+                "ArrowLeft" ->
+                    ( { model
+                        | current =
+                            model.slides
+                                |> List.filter (\s -> s.id == prev)
+                                |> List.head
+                      }
+                    , Cmd.none
+                    )
+
+                "ArrowRight" ->
+                    ( { model
+                        | current =
+                            model.slides
+                                |> List.filter (\s -> s.id == next)
+                                |> List.head
+                      }
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( model
+                    , Cmd.none
+                    )
 
 
 
@@ -68,8 +115,16 @@ update msg model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
+subscriptions model =
+    Sub.batch
+        [ Browser.Events.onKeyDown (Json.Decode.map UserPressedKeyDown keyDecoder)
+        , Browser.Events.onAnimationFrameDelta BrowserRenderedFrame
+        ]
+
+
+keyDecoder : Json.Decode.Decoder String
+keyDecoder =
+    Json.Decode.field "key" Json.Decode.string
 
 
 
@@ -104,14 +159,16 @@ viewSlide model slide =
                 Just c ->
                     if c == slide then
                         "border-red-600"
+
                     else
                         "border-gray-600"
 
                 Nothing ->
                     "border-gray-600"
     in
-    div [ Html.Attributes.class <| "bg-blue-100 border-solid border-4 h-48 w-48 " ++ borderColor
-        , Html.Events.onClick <| ClickedSlide slide
+    div
+        [ Html.Attributes.class <| "bg-blue-100 border-solid border-4 h-48 w-48 " ++ borderColor
+        , Html.Events.onClick <| UserClickedSlide slide
         ]
         [ h2 [ Html.Attributes.class "text-4xl" ]
             [ text slide.title ]
