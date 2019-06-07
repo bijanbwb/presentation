@@ -57,18 +57,28 @@ initialModel =
     , frames =
         [ { x = 0
           , y = 0
-          , width = 300
-          , height = 200
-          }
-        , { x = 0
-          , y = 0
           , width = 500
-          , height = 100
+          , height = 400
           }
         , { x = 0
           , y = 0
           , width = 200
-          , height = 600
+          , height = 300
+          }
+        , { x = 0
+          , y = 0
+          , width = 600
+          , height = 800
+          }
+        , { x = 0
+          , y = 0
+          , width = 100
+          , height = 100
+          }
+        , { x = 0
+          , y = 0
+          , width = 800
+          , height = 400
           }
         ]
     , slides = Data.slides
